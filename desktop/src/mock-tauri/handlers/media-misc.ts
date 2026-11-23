@@ -165,6 +165,12 @@ export const mediaMiscHandlers: CommandHandlerMap = {
 
 	set_tray: async () => null,
 
+	expand_playlist: async (args) => {
+		const url = String(args?.url ?? '')
+		if (url.includes('fail')) throw new Error(`[mock] yt-dlp could not read playlist ${url}`)
+		return [1, 2, 3].map((index) => `https://www.youtube.com/watch?v=mock${index}`)
+	},
+
 	download_audio: async (args) => {
 		// A link with "fail" in it stands in for a site yt-dlp cannot fetch.
 		if (String(args?.url ?? '').includes('fail')) throw new Error(`[mock] yt-dlp could not download ${String(args?.url)}`)

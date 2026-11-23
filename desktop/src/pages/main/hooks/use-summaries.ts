@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { m } from '~/paraglide/messages.js'
-import { appLanguageName, chunkLines, createClient, fillPrompt, inputBudgetBytes, utf8Bytes, type AiClient } from '~/lib/ai'
+import { appLanguageName, chunkLines, createClient, fillPrompt, inputBudgetBytes, preservesLength, utf8Bytes, type AiClient } from '~/lib/ai'
 import { asText } from '~/lib/transcript'
 import { usePreferenceProvider } from '~/providers/preference'
 import type { Job, TranscribeQueue } from './use-transcribe-queue'
@@ -104,14 +104,20 @@ export function useSummaries(queue: TranscribeQueue): Summaries {
 				const frame = fillPrompt(template, { ...values, transcript: '' })
 				const chunks = chunkLines(transcriptOf(job).split('\n'), frame, connection.contextTokens)
 				let source = chunks[0]
+				const parts: string[] = []
 				if (chunks.length > 1) {
-					const parts: string[] = []
 					for (const [index, chunk] of chunks.entries()) {
 						setProgressFor(job.id, { done: index, total: chunks.length })
 						parts.push((await client.ask(fillPrompt(template, { ...values, transcript: chunk }))).trim())
 					}
 					setProgressFor(job.id, { done: chunks.length, total: chunks.length })
 					source = joinParts(parts)
+				}
+				// A reworked transcript is already the answer once its pieces are joined; a second
+				// pass over the whole of it would not fit the context it was split to fit.
+				if (chunks.length > 1 && preservesLength(template)) {
+					queue.setJobSummary(job.id, parts.join('\n\n'))
+					return true
 				}
 				let text = ''
 				await client.stream(fillPrompt(template, { ...values, transcript: source }), (token) => {

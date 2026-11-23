@@ -165,15 +165,16 @@ export function useAudioDownload(transcribe: (paths: string[]) => Promise<void>)
 	 * The box and the list are emptied as soon as the run starts so the next links can go in.
 	 */
 	async function downloadAudio() {
-		const urls = pendingLinks
-		if (!urls.length) return
+		if (!pendingLinks.length) return
 		// Anything in the box that is not a link is left there rather than silently dropped.
 		setAudioUrl(ytDlp.splitMediaLinks(audioUrl).rest.join(' '))
 		setQueuedLinks([])
 		cancelYtDlpRef.current = false
 		setDownloadingAudio(true)
 		const downloaded: string[] = []
-		const failed: { url: string; error: unknown }[] = []
+		// A playlist link becomes its videos; one that cannot be read is skipped like a failed download.
+		const { links: urls, failed } = await ytDlp.expandLinks(pendingLinks)
+		const unreadPlaylists = failed.length
 		try {
 			for (const [index, url] of urls.entries()) {
 				if (cancelYtDlpRef.current) break
@@ -215,7 +216,7 @@ export function useAudioDownload(transcribe: (paths: string[]) => Promise<void>)
 			void offerYtDlpUpdate(true)
 			return
 		}
-		notify.warning(m.linksSkipped({ count: String(failed.length), total: String(urls.length) }), {
+		notify.warning(m.linksSkipped({ count: String(failed.length), total: String(urls.length + unreadPlaylists) }), {
 			description: failed.map(({ url }) => url).join('\n'),
 			position: 'bottom-center',
 			duration: 10000,

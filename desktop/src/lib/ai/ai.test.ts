@@ -120,7 +120,22 @@ describe('createClient', () => {
 
 	it('reports a working connection with its latency', async () => {
 		fetchMock.mockResolvedValue({ ok: true, json: async () => ({ content: [{ text: 'OK' }] }) })
-		const result = await testConnection(DEFAULT_AI.connection)
+		const result = await testConnection({ ...DEFAULT_AI.connection, platform: 'claude' })
 		expect(result).toMatchObject({ ok: true, reply: 'OK' })
+	})
+})
+
+describe('moeeen presets', () => {
+	it('mark the transcript-reworking presets so long transcripts are not re-summarized', async () => {
+		const { preservesLength, presets } = await import('./config')
+		for (const id of ['moeeen-light', 'moeeen-proofread', 'moeeen-marks']) expect(preservesLength(presetPrompt(id))).toBe(true)
+		for (const id of ['moeeen-medium', 'moeeen-points', 'summary']) expect(preservesLength(presetPrompt(id))).toBe(false)
+		expect(preservesLength('custom prompt {transcript}')).toBe(false)
+		for (const preset of presets.filter((p) => p.id.startsWith('moeeen-'))) expect(preset.prompt).toContain('{transcript}')
+	})
+
+	it('default to an offline model and the medium summary', () => {
+		expect(DEFAULT_AI.connection.platform).toBe('ollama')
+		expect(DEFAULT_AI.tasks.summary.preset).toBe('moeeen-medium')
 	})
 })

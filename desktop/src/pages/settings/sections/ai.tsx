@@ -57,6 +57,11 @@ export function presetLabel(preset: string) {
 		punctuation: m.presetPunctuation,
 		formal: m.presetFormal,
 		casual: m.presetCasual,
+		'moeeen-light': m.presetMoeeenLight,
+		'moeeen-medium': m.presetMoeeenMedium,
+		'moeeen-points': m.presetMoeeenPoints,
+		'moeeen-proofread': m.presetMoeeenProofread,
+		'moeeen-marks': m.presetMoeeenMarks,
 	}
 	return labels[preset]?.() ?? m.presetCustom()
 }

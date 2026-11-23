@@ -60,10 +60,52 @@ export interface Preset {
 	id: string
 	task: 'summary' | 'dictation'
 	prompt: string
+	/**
+	 * The answer is the whole transcript reworked, not a digest of it. A long transcript is
+	 * then worked piece by piece and the pieces joined, never fed back for a second pass.
+	 */
+	preserveLength?: boolean
 }
+
+const RULE_AR = 'أخرِج المطلوب فقط، بلا مقدمة ولا شرح ولا تعليق. اكتب بالعربية الفصحى، وحافظ على ترتيب الكلام كما ورد.'
+
+const KEEP_SACRED = 'لا تغيّر ألفاظ الآيات القرآنية ولا الأحاديث ولا الأبيات والمتون المحفوظة؛ انقلها كما وردت في النص.'
+
+/** معين: ثلاثة مستويات للتلخيص، وتصحيح، وتمييز النصوص الشرعية. */
+const moeeenPresets: Preset[] = [
+	{
+		id: 'moeeen-light',
+		task: 'summary',
+		preserveLength: true,
+		prompt: `${RULE_AR}\n\nهذا تفريغ آلي لدرس أو محاضرة. نقِّحه تنقيحًا خفيفًا:\n- احذف التكرار العارض وكلمات الحشو (مثل: يعني، آآ، إيه) وتعثّر الكلام.\n- أصلح علامات الترقيم وقسّم الكلام إلى فقرات.\n- أبقِ عبارات المتكلم وأسلوبه وأمثلته واستدلاله كما هي، ولا تختصر المعنى.\n- ${KEEP_SACRED}\n\n"""\n{transcript}\n"""`,
+	},
+	{
+		id: 'moeeen-medium',
+		task: 'summary',
+		prompt: `${RULE_AR}\n\nهذا تفريغ آلي لدرس أو محاضرة. اختصره اختصارًا وسطًا في نحو ثلث طوله، بصيغة markdown:\n- عناوين فرعية (##) لكل موضوع بالترتيب الذي تناوله المتكلم.\n- تحت كل عنوان: المسائل وأقوال العلماء التي ذكرها، وأدلته وتعليلاته باختصار.\n- ${KEEP_SACRED}\n- لا تُضِف معلومة أو حكمًا أو ترجيحًا لم يذكره المتكلم.\n\n"""\n{transcript}\n"""`,
+	},
+	{
+		id: 'moeeen-points',
+		task: 'summary',
+		prompt: `${RULE_AR}\n\nهذا تفريغ آلي لدرس أو محاضرة. استخرج النقاط الأساسية بصيغة markdown:\n- سطر واحد في أوله يذكر موضوع الدرس.\n- ثم قائمة نقاط مرقّمة بالترتيب الذي وردت به، كل نقطة جملة أو جملتان.\n- اذكر الدليل مختصرًا بجانب النقطة إن ذكره المتكلم.\n- لا تُضِف شيئًا لم يذكره المتكلم.\n\n"""\n{transcript}\n"""`,
+	},
+	{
+		id: 'moeeen-proofread',
+		task: 'summary',
+		preserveLength: true,
+		prompt: `${RULE_AR}\n\nهذا تفريغ آلي لكلام عربي. صحّح أخطاءه فقط:\n- الأخطاء الإملائية (الهمزات، التاء المربوطة والهاء، الألف المقصورة والياء).\n- الكلمات التي أخطأ فيها التفريغ الآلي فسمعها بكلمة قريبة الصوت، إذا كان الصواب واضحًا من السياق.\n- الأخطاء النحوية الظاهرة وعلامات الترقيم.\n- لا تُعِد الصياغة، ولا تحذف، ولا تختصر، ولا تُضِف. أبقِ اللهجة العامية إن وردت.\n- ${KEEP_SACRED} وإن أخطأ التفريغ في لفظ آية مشهورة فصحّحه إلى لفظ المصحف.\n\n"""\n{transcript}\n"""`,
+	},
+	{
+		id: 'moeeen-marks',
+		task: 'summary',
+		preserveLength: true,
+		prompt: `${RULE_AR}\n\nأعِد هذا التفريغ كاملًا بلا حذف ولا اختصار، بصيغة markdown، مع تمييز النصوص الخاصة:\n- الآيات القرآنية: بين القوسين ﴿ ﴾ وبعدها اسم السورة ورقم الآية بين معقوفين، مثل: ﴿الحمد لله رب العالمين﴾ [الفاتحة: 2]. لا تذكر اسم السورة أو الرقم إلا إن كنت متأكدًا منهما.\n- الأحاديث النبوية: بين علامتي التنصيص « » بخط عريض.\n- الأبيات الشعرية والمنظومات: كل بيت في سطر، والشطران بينهما ثلاث نجوم (***)، والأبيات داخل اقتباس (>).\n- المتون المقروءة (كلام المصنّف الذي يقرؤه الشارح): داخل اقتباس (>) يسبقه سطر **المتن:**.\n- ${KEEP_SACRED}\n\n"""\n{transcript}\n"""`,
+	},
+]
 
 /** Starting points. Picking one fills the prompt; editing the prompt makes it "custom". */
 export const presets: Preset[] = [
+	...moeeenPresets,
 	{
 		id: 'summary',
 		task: 'summary',
@@ -110,10 +152,16 @@ export function presetPrompt(id: string) {
 	return presets.find((preset) => preset.id === id)?.prompt ?? ''
 }
 
+/** Whether this prompt is a preset that reworks the whole transcript rather than digesting it. */
+export function preservesLength(prompt: string) {
+	return presets.some((preset) => preset.preserveLength && preset.prompt === prompt)
+}
+
 export const DEFAULT_AI: AiSettings = {
 	connection: {
-		platform: 'claude',
-		model: defaultModel('claude'),
+		// معين يعمل بلا إنترنت أولًا: نموذج محلي عبر Ollama.
+		platform: 'ollama',
+		model: defaultModel('ollama'),
 		contextTokens: 65_536,
 		claudeApiKey: '',
 		ollamaBaseUrl: 'http://localhost:11434',
@@ -121,7 +169,7 @@ export const DEFAULT_AI: AiSettings = {
 		openaiApiKey: '',
 	},
 	tasks: {
-		summary: { enabled: false, autoOnFinish: false, preset: 'summary', prompt: presetPrompt('summary') },
+		summary: { enabled: false, autoOnFinish: false, preset: 'moeeen-medium', prompt: presetPrompt('moeeen-medium') },
 		dictation: { enabled: false, preset: 'punctuation', prompt: presetPrompt('punctuation') },
 	},
 }

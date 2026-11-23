@@ -171,9 +171,10 @@ const systemIsDark = window.matchMedia && window.matchMedia('(prefers-color-sche
 const defaultDisplayLanguage = 'en-US'
 
 export const DEFAULT_MODEL_OPTIONS: ModelOptions = {
-	init_prompt: '',
+	// معين عربي أولًا. نص البداية يعلّم Whisper الترقيم العربي ومفردات الدروس الشرعية.
+	init_prompt: 'بسم الله الرحمن الرحيم، الحمد لله رب العالمين، والصلاة والسلام على رسول الله.',
 	verbose: false,
-	lang: 'en',
+	lang: 'ar',
 	n_threads: 4,
 	// Above 0 whisper samples instead of beam searching; 0 still falls back upward on a bad window.
 	temperature: 0,
@@ -212,7 +213,7 @@ export function PreferenceProvider({ children }: { children: ReactNode }) {
 	const [closeToTray, setCloseToTray] = usePersisted<boolean>(CONFIG_KEYS.closeToTray, false)
 	// Off by default: holding a laptop awake around the clock is not something to opt someone into.
 	const [preventSleep, setPreventSleep] = usePersisted<boolean>(CONFIG_KEYS.preventSleep, false)
-	const [textAreaDirection, setTextAreaDirection] = usePersisted<Direction>(CONFIG_KEYS.textAreaDirection, 'ltr')
+	const [textAreaDirection, setTextAreaDirection] = usePersisted<Direction>(CONFIG_KEYS.textAreaDirection, 'rtl')
 	const [textFormatTranscript, setTextFormatTranscript] = usePersisted<TextFormat>(CONFIG_KEYS.textFormatTranscript, 'pdf')
 	const [textFormatSummary, setTextFormatSummary] = usePersisted<TextFormat>(CONFIG_KEYS.textFormatSummary, 'md')
 	const isMounted = useRef<boolean>(false)

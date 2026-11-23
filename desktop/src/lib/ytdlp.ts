@@ -35,6 +35,36 @@ export async function downloadAudio(url: string) {
 	return outPath
 }
 
+/** A link that names a playlist: YouTube's `list=` parameter or a `/playlist` page. */
+export function isPlaylistUrl(url: string) {
+	try {
+		const parsed = new URL(url)
+		return parsed.searchParams.has('list') || /\/playlist\/?$/.test(parsed.pathname)
+	} catch {
+		return false
+	}
+}
+
+/** The videos inside a playlist link; any other link comes back as itself. */
+export async function expandPlaylist(url: string): Promise<string[]> {
+	if (!isPlaylistUrl(url)) return [url]
+	return await invoke<string[]>('expand_playlist', { url })
+}
+
+/** Every link with playlists opened up into their videos, without repeats, in order. */
+export async function expandLinks(urls: string[], expand = expandPlaylist): Promise<{ links: string[]; failed: { url: string; error: unknown }[] }> {
+	const links: string[] = []
+	const failed: { url: string; error: unknown }[] = []
+	for (const url of urls) {
+		try {
+			links.push(...(await expand(url)))
+		} catch (error) {
+			failed.push({ url, error })
+		}
+	}
+	return { links: [...new Set(links)], failed }
+}
+
 function isHttpUrl(token: string) {
 	try {
 		const { protocol } = new URL(token)

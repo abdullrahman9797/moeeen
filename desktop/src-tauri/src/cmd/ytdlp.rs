@@ -181,28 +181,79 @@ pub async fn download_ytdlp(app_handle: AppHandle, version: String) -> CommandRe
     }
 }
 
+/// The downloaded yt-dlp binary, made executable.
+fn ytdlp_binary(app_handle: &AppHandle) -> Result<PathBuf> {
+    let path = app_handle.path().app_local_data_dir().context("Can't get data directory")?;
+    let path = path.join(get_binary_name());
+    tracing::debug!("path is {}", path.display());
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mut perm = std::fs::metadata(&path)?.permissions();
+        perm.set_mode(0o755);
+        std::fs::set_permissions(&path, perm)?;
+    }
+    Ok(path)
+}
+
+/// A playlist never expands past this many videos, so a channel link cannot queue thousands.
+const MAX_PLAYLIST_ENTRIES: usize = 500;
+
+/// The http(s) links yt-dlp printed, one per line, without repeats and in order.
+fn parse_playlist_entries(stdout: &str) -> Vec<String> {
+    let mut seen = std::collections::HashSet::new();
+    stdout
+        .lines()
+        .map(str::trim)
+        .filter_map(|line| validate_media_url(line).ok())
+        .filter(|url| seen.insert(url.clone()))
+        .take(MAX_PLAYLIST_ENTRIES)
+        .collect()
+}
+
+/// The video links inside a playlist link, without downloading anything. A link that is not a
+/// playlist comes back as itself, so callers can pass every link through this.
+#[tauri::command]
+pub async fn expand_playlist(app_handle: AppHandle, url: String) -> CommandResult<Vec<String>> {
+    let url = validate_media_url(&url)?;
+    let path = ytdlp_binary(&app_handle)?;
+    let mut cmd = tokio::process::Command::new(path);
+    cmd.args([
+        "--flat-playlist",
+        "--yes-playlist",
+        "--no-warnings",
+        "--no-update",
+        "--ignore-config",
+        "--playlist-end",
+        &MAX_PLAYLIST_ENTRIES.to_string(),
+        // A flat entry may lack webpage_url; its url is then the page link.
+        "--print",
+        "%(webpage_url,url)s",
+        "--",
+        &url,
+    ])
+    .stdin(Stdio::null())
+    .kill_on_drop(true);
+    #[cfg(windows)]
+    cmd.creation_flags(CREATE_NO_WINDOW);
+
+    let output = cmd.output().await?;
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(eyre!("Failed to read playlist: {}", stderr.trim()).into());
+    }
+    let entries = parse_playlist_entries(&String::from_utf8_lossy(&output.stdout));
+    Ok(if entries.is_empty() { vec![url] } else { entries })
+}
+
 #[tauri::command]
 pub async fn download_audio(app_handle: AppHandle, url: String, out_path: String) -> CommandResult<()> {
     tracing::debug!("download audio {}", url);
     let url = validate_media_url(&url)?;
     let out_path = validate_out_path(&out_path, &get_vibe_temp_folder())?;
     let out_path = out_path.to_string_lossy().to_string();
-    let name = get_binary_name();
-    let path = app_handle.path().app_local_data_dir().context("Can't get data directory")?;
-    let path = path.join(name);
-    tracing::debug!("path is {}", path.display());
+    let path = ytdlp_binary(&app_handle)?;
     let ffmpeg_path = get_ffmpeg_path();
-
-    // Set permission
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let meta = std::fs::metadata(path.clone())?;
-        let mut perm = meta.permissions();
-        // chmod +x
-        perm.set_mode(0o755);
-        std::fs::set_permissions(path.clone(), perm)?;
-    }
 
     let mut cmd = std::process::Command::new(path);
     let cmd = cmd
@@ -289,6 +340,23 @@ pub async fn download_audio(app_handle: AppHandle, url: String, out_path: String
 mod tests {
     use super::*;
     use std::path::PathBuf;
+
+    #[test]
+    fn playlist_entries_keep_only_unique_links_in_order() {
+        let stdout = "https://www.youtube.com/watch?v=a\nNA\n\n  https://www.youtube.com/watch?v=b \nhttps://www.youtube.com/watch?v=a\n--exec=x\nfile:///etc/passwd\n";
+        assert_eq!(
+            parse_playlist_entries(stdout),
+            vec!["https://www.youtube.com/watch?v=a", "https://www.youtube.com/watch?v=b"]
+        );
+    }
+
+    #[test]
+    fn playlist_entries_are_capped() {
+        let stdout: String = (0..MAX_PLAYLIST_ENTRIES + 20)
+            .map(|index| format!("https://www.youtube.com/watch?v={index}\n"))
+            .collect();
+        assert_eq!(parse_playlist_entries(&stdout).len(), MAX_PLAYLIST_ENTRIES);
+    }
 
     #[test]
     fn download_paths_are_always_staged_in_vibe_temp() {

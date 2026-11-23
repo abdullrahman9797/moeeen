@@ -152,6 +152,7 @@ async fn main() -> Result<()> {
             cmd::app::show_temp_path,
             cmd::files::get_ffmpeg_path,
             cmd::ytdlp::download_audio,
+            cmd::ytdlp::expand_playlist,
             cmd::ytdlp::download_ytdlp,
             cmd::ytdlp::get_temp_path,
             cmd::ytdlp::get_latest_ytdlp_version,
