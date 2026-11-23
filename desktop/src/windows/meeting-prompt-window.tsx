@@ -18,7 +18,7 @@ import { supportedLanguages } from '~/lib/i18n'
 import { cn } from '~/lib/style'
 import { m } from '~/paraglide/messages.js'
 import { getLocale, getTextDirection, setLocale } from '~/paraglide/runtime.js'
-import logoUrl from '../../../design/logo.svg?url'
+import logoUrl from '~/assets/moeeen-icon.png'
 
 const serviceNames: Record<MeetingSource, string> = {
 	meet: 'Google Meet',

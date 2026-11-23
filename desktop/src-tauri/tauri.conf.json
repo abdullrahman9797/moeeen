@@ -1,8 +1,8 @@
 {
 	"$schema": "./gen/schemas/desktop-schema.json",
-	"productName": "vibe",
+	"productName": "Moeeen",
 	"version": "3.3.8",
-	"identifier": "github.com.thewh1teagle.vibe",
+	"identifier": "com.moeeen.app",
 	"app": {
 		"macOSPrivateApi": true,
 		"windows": [],
@@ -59,7 +59,7 @@
 	"plugins": {
 		"updater": {
 			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZFNTJENkIxNTM4NTQxODgKUldTSVFZVlRzZFpTL21VWTBzak1IMTA1ZjdNVHA0MXQ3Y20wa2F2U24zVGl6WUUvTGVoQi8wN1kK",
-			"endpoints": ["https://thewh1teagle.github.io/vibe/updater/stable.json"]
+			"endpoints": ["https://moeeen.com/updater/stable.json"]
 		},
 		"deep-link": {
 			"mobile": [],

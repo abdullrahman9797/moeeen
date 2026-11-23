@@ -4,6 +4,7 @@ import * as pathApi from '@tauri-apps/api/path'
 import * as dialog from '@tauri-apps/plugin-dialog'
 import * as fs from '@tauri-apps/plugin-fs'
 import { Download, MoreHorizontal, Plus, Search, Settings, Smartphone } from 'lucide-react'
+import moeeenLogo from '~/assets/moeeen-mark.png'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { m } from '~/paraglide/messages.js'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/components/ui/dropdown-menu'
@@ -384,7 +385,7 @@ function RecentsList({
 export default function RecentsSidebar() {
 	const { queue, startNew, preference } = useSession()
 	const { updateApp, availableUpdate, state: updateState } = useContext(UpdaterContext)
-	const downloadingUpdate = updateState.phase === 'downloading' 
+	const downloadingUpdate = updateState.phase === 'downloading'
 	const { width, dragging, handleProps } = useResizableWidth()
 	const [entries, setEntries] = useState<TranscriptEntry[]>([])
 	const [query, setQuery] = useState('')
@@ -428,7 +429,7 @@ export default function RecentsSidebar() {
 			<div data-tauri-drag-region className="h-14 shrink-0" />
 			{/* Codex-style: the wordmark gets its own row under the titlebar strip. */}
 			<div className="px-4 pt-0.5 pb-2">
-				<span className="select-none text-[17px] font-semibold tracking-[-0.03em] text-foreground">{m.appTitle()}</span>
+				<img src={moeeenLogo} alt={m.appTitle()} draggable={false} className="h-7 w-auto select-none" />
 			</div>
 			<div className="px-2">
 				<button

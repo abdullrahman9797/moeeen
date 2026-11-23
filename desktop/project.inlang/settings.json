@@ -1,7 +1,8 @@
 {
-	"baseLocale": "en-US",
+	"baseLocale": "ar-SA",
 	"locales": [
 		"en-US",
+		"ar-SA",
 		"bg-BG",
 		"ca-AD",
 		"cs-CZ",

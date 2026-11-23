@@ -1,6 +1,6 @@
-export const aboutURL = 'https://thewh1teagle.github.io/vibe/'
-export const repoURL = 'https://github.com/thewh1teagle/vibe'
-export const updateVersionURL = 'https://github.com/thewh1teagle/vibe/releases/latest'
+export const aboutURL = 'https://moeeen.com/'
+export const repoURL = 'https://github.com/abdullrahman9797/moeeen'
+export const updateVersionURL = 'https://github.com/abdullrahman9797/moeeen/releases/latest'
 export const modelsPageURL = 'https://thewh1teagle.github.io/vibe/models'
 /** The model catalog, published with the website so models added later reach installed apps. */
 export const modelCatalogURL = 'https://thewh1teagle.github.io/vibe/models.json'

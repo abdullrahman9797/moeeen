@@ -83,8 +83,8 @@ impl KeepAwake {
                         .display(flags.display)
                         .idle(flags.idle)
                         .reason("Vibe is working")
-                        .app_name("Vibe")
-                        .app_reverse_domain("github.com.thewh1teagle.vibe")
+                        .app_name("Moeeen")
+                        .app_reverse_domain("com.moeeen.app")
                         .create()
                     {
                         Ok(awake) => guard = Some(awake),

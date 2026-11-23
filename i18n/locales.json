@@ -1,4 +1,5 @@
 [
+	{ "code": "ar-SA", "name": "arabic", "desktop": true, "website": false },
 	{ "code": "bg-BG", "name": "bulgarian", "desktop": true, "website": true },
 	{ "code": "ca-AD", "name": "catalan", "desktop": true, "website": false },
 	{ "code": "cs-CZ", "name": "czech", "desktop": true, "website": true },

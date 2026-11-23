@@ -38,7 +38,7 @@ static EMERGENCY_DIR: OnceLock<PathBuf> = OnceLock::new();
 
 const STAGING_FOLDER_NAME: &str = "staging";
 /// Matches `identifier` in tauri.conf.json, so the fallback lands where `app_cache_dir` does.
-const APP_IDENTIFIER: &str = "github.com.thewh1teagle.vibe";
+const APP_IDENTIFIER: &str = "com.moeeen.app";
 /// Set once the folder passed the full check; later calls only confirm it is still a directory.
 static STAGING_VERIFIED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 

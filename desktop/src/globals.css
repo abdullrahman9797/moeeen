@@ -1,4 +1,19 @@
 @import '@fontsource-variable/inter';
+@import '@fontsource/ibm-plex-sans-arabic/400.css';
+@import '@fontsource/ibm-plex-sans-arabic/500.css';
+@import '@fontsource/ibm-plex-sans-arabic/700.css';
+
+/* خط ثمانية: يُستعمل إن وُجدت ملفاته في assets/fonts أو كان مثبتًا على الجهاز، وإلا IBM Plex Sans Arabic. */
+@font-face {
+	font-family: 'Moeeen Sans';
+	font-weight: 400;
+	src: local('Thmanyah Sans'), local('ThmanyahSans-Regular'), local('IBM Plex Sans Arabic');
+}
+@font-face {
+	font-family: 'Moeeen Sans';
+	font-weight: 700;
+	src: local('Thmanyah Sans Bold'), local('ThmanyahSans-Bold'), local('IBM Plex Sans Arabic Bold');
+}
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
@@ -83,7 +98,7 @@ html.dictation-indicator-window #root {
 	--card-foreground: #1a1c1f;
 	--popover: #ffffff;
 	--popover-foreground: #1a1c1f;
-	--primary: #2563eb;
+	--primary: #12a35a;
 	--primary-foreground: #ffffff;
 	--secondary: #f4f4f4;
 	--secondary-foreground: #1a1c1f;
@@ -97,7 +112,7 @@ html.dictation-indicator-window #root {
 	--success-foreground: #f3faf6;
 	--border: #e6e6e6;
 	--input: #e6e6e6;
-	--ring: rgb(37 99 235 / 0.35);
+	--ring: rgb(18 163 90 / 0.35);
 
 	/* Aurora hues — the only chroma in the system */
 	--aurora-1: #5b8def;
@@ -113,9 +128,9 @@ html.dictation-indicator-window #root {
 
 	--sidebar: #f9f9f9;
 	--sidebar-foreground: #1a1c1f;
-	--sidebar-primary: #2563eb;
+	--sidebar-primary: #12a35a;
 	--sidebar-primary-foreground: #ffffff;
-	--sidebar-accent: #f1f1ee;
+	--sidebar-accent: #eaf6ef;
 	--sidebar-accent-foreground: #111110;
 	--sidebar-border: #e7e7e2;
 	--sidebar-ring: rgb(17 17 16 / 0.2);
@@ -133,27 +148,28 @@ html.dictation-indicator-window #root {
 }
 
 .dark {
-	--background: #181818;
-	--foreground: #ececec;
-	--card: #212121;
-	--card-foreground: #ececec;
-	--popover: #2a2a2a;
-	--popover-foreground: #ececec;
-	--primary: #2563eb;
-	--primary-foreground: #ffffff;
-	--secondary: #242424;
-	--secondary-foreground: #ececec;
-	--muted: #242424;
-	--muted-foreground: #9a9a9a;
-	--accent: #2a2a2a;
-	--accent-foreground: #ececec;
-	--destructive: #c4655c;
+	/* هوية معين: خلفية خضراء داكنة جدًا، وأخضر نعناعي. */
+	--background: #0b1311;
+	--foreground: #e8f1ed;
+	--card: #111c19;
+	--card-foreground: #e8f1ed;
+	--popover: #16231f;
+	--popover-foreground: #e8f1ed;
+	--primary: #2bd97c;
+	--primary-foreground: #04130b;
+	--secondary: #15211d;
+	--secondary-foreground: #e8f1ed;
+	--muted: #15211d;
+	--muted-foreground: #8fa39b;
+	--accent: #1a2a24;
+	--accent-foreground: #e8f1ed;
+	--destructive: #e0675c;
 	--destructive-foreground: #1a0f0e;
-	--success: #6aab8b;
-	--success-foreground: #0d1512;
-	--border: #303030;
-	--input: #303030;
-	--ring: rgb(51 156 255 / 0.4);
+	--success: #2bd97c;
+	--success-foreground: #04130b;
+	--border: #1f302a;
+	--input: #1f302a;
+	--ring: rgb(43 217 124 / 0.45);
 
 	--aurora-1: #5b8def;
 	--aurora-2: #b98de3;
@@ -162,14 +178,14 @@ html.dictation-indicator-window #root {
 
 	--chart-5: #9a9a94;
 
-	--sidebar: #212121;
-	--sidebar-foreground: #ececec;
-	--sidebar-primary: #2563eb;
-	--sidebar-primary-foreground: #ffffff;
-	--sidebar-accent: #2a2a2a;
-	--sidebar-accent-foreground: #ececec;
-	--sidebar-border: #303030;
-	--sidebar-ring: rgb(51 156 255 / 0.4);
+	--sidebar: #0e1714;
+	--sidebar-foreground: #e8f1ed;
+	--sidebar-primary: #2bd97c;
+	--sidebar-primary-foreground: #04130b;
+	--sidebar-accent: #15241f;
+	--sidebar-accent-foreground: #7cf2b5;
+	--sidebar-border: #1f302a;
+	--sidebar-ring: rgb(43 217 124 / 0.45);
 
 	--shadow-2xs: 0 1px 1px rgb(0 0 0 / 0.3);
 	--shadow-xs: 0 1px 2px rgb(0 0 0 / 0.35);
@@ -190,6 +206,9 @@ html.dictation-indicator-window #root {
 
 	html {
 		font-family:
+			'Thmanyah Sans',
+			'Moeeen Sans',
+			'IBM Plex Sans Arabic',
 			'Inter Variable',
 			'Inter',
 			-apple-system,

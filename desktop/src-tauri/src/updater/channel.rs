@@ -9,7 +9,7 @@ use tauri::AppHandle;
 use tauri_plugin_store::StoreExt;
 use tauri_plugin_updater::{Update, UpdaterExt};
 
-const CHANNELS_URL: &str = "https://thewh1teagle.github.io/vibe/updater";
+const CHANNELS_URL: &str = "https://moeeen.com/updater";
 
 /// Config keys, shared with `desktop/src/lib/config-keys.ts`.
 const CHANNEL_KEY: &str = "general.updateChannel";

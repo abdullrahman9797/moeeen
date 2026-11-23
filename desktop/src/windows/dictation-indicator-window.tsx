@@ -3,7 +3,7 @@ import { invoke } from '@tauri-apps/api/core'
 import { AlertTriangle, Check, LoaderCircle } from 'lucide-react'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { m } from '~/paraglide/messages.js'
-import logoUrl from '../../../design/logo.svg?url'
+import logoUrl from '~/assets/moeeen-icon.png'
 import { getDictationIndicatorState, type DictationIndicatorState } from '~/lib/dictation-indicator'
 
 export default function DictationIndicatorWindow() {

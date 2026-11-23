@@ -167,8 +167,7 @@ export interface ModelOptions {
 	beam_size?: number
 }
 
-const systemIsDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-const defaultDisplayLanguage = 'en-US'
+const defaultDisplayLanguage = 'ar-SA'
 
 export const DEFAULT_MODEL_OPTIONS: ModelOptions = {
 	// معين عربي أولًا. نص البداية يعلّم Whisper الترقيم العربي ومفردات الدروس الشرعية.
@@ -217,7 +216,7 @@ export function PreferenceProvider({ children }: { children: ReactNode }) {
 	const [textFormatTranscript, setTextFormatTranscript] = usePersisted<TextFormat>(CONFIG_KEYS.textFormatTranscript, 'pdf')
 	const [textFormatSummary, setTextFormatSummary] = usePersisted<TextFormat>(CONFIG_KEYS.textFormatSummary, 'md')
 	const isMounted = useRef<boolean>(false)
-	const [theme, setTheme] = usePersisted<'dark' | 'light'>(CONFIG_KEYS.theme, systemIsDark ? 'dark' : 'light')
+	const [theme, setTheme] = usePersisted<'dark' | 'light'>(CONFIG_KEYS.theme, 'dark')
 	const [homeTab, setHomeTab] = usePersisted<HomeTab>(CONFIG_KEYS.homeTab, 'file')
 
 	const [soundOnFinish, setSoundOnFinish] = usePersisted(CONFIG_KEYS.soundOnFinish, defaultOptions.soundOnFinish)

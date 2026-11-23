@@ -11,9 +11,9 @@ describe('local storage migrations', () => {
 		localStorage.clear()
 	})
 
-	it('replaces Paraglide fallback English with the legacy locale once', () => {
+	it('replaces the Paraglide fallback locale with the legacy locale once', () => {
 		localStorage.setItem('prefs_display_language', JSON.stringify('fr-FR'))
-		localStorage.setItem(localStorageKey, 'en-US')
+		localStorage.setItem(localStorageKey, 'ar-SA')
 
 		runMigrations()
 
